@@ -1,0 +1,217 @@
+-- Name: Kenneth Irving
+
+/* ---------------------------------------------------------------------------------- */
+/* Q1: Alter PRODUCTLIST, migrate data from STOREFRONT, and drop STOREFRONT */
+/* ---------------------------------------------------------------------------------- */
+-- Altering PRODUCTLIST to add the new columns
+ALTER TABLE PRODUCTLIST 
+ADD (PRICE NUMBER(10,2), DESCRIPTION VARCHAR2(250));
+
+UPDATE PRODUCTLIST p
+SET (PRICE, DESCRIPTION) = (
+    SELECT  s.PRICE, 
+            s.DESCRIPTION
+    FROM STOREFRONT s
+    WHERE s.PRODUCTCODE = p.PRODUCTCODE
+);
+
+-- Dropping the STOREFRONT table
+DROP TABLE STOREFRONT;
+
+/* ---------------------------------------------------------------------------------- */
+/* Q2: Create CHATLOG table and insert 10 rows of sample data */
+/* ---------------------------------------------------------------------------------- */
+CREATE TABLE CHATLOG (
+    CHATID NUMBER(3) PRIMARY KEY,
+    RECEIVERID NUMBER(3),
+    SENDERID NUMBER(3),
+    DATESENT DATE,
+    CONTENT VARCHAR2(250),
+    FOREIGN KEY (RECEIVERID) REFERENCES USERBASE(USERID),
+    FOREIGN KEY (SENDERID) REFERENCES USERBASE(USERID)
+);
+
+INSERT INTO CHATLOG (CHATID, RECEIVERID, SENDERID, DATESENT, CONTENT) VALUES (1, 102, 101, SYSDATE, 'Hey! You getting on VG tn?');
+INSERT INTO CHATLOG (CHATID, RECEIVERID, SENDERID, DATESENT, CONTENT) VALUES (2, 101, 102, SYSDATE, 'Yea I will be on in 10 min');
+INSERT INTO CHATLOG (CHATID, RECEIVERID, SENDERID, DATESENT, CONTENT) VALUES (3, 103, 101, SYSDATE, 'yo, did you see the new update?');
+INSERT INTO CHATLOG (CHATID, RECEIVERID, SENDERID, DATESENT, CONTENT) VALUES (4, 104, 105, SYSDATE, 'lemme know when it finishes downloading');
+INSERT INTO CHATLOG (CHATID, RECEIVERID, SENDERID, DATESENT, CONTENT) VALUES (5, 105, 104, SYSDATE, 'almost done, at like 99%');
+INSERT INTO CHATLOG (CHATID, RECEIVERID, SENDERID, DATESENT, CONTENT) VALUES (6, 106, 107, SYSDATE, 'ggs earlier btw :)');
+INSERT INTO CHATLOG (CHATID, RECEIVERID, SENDERID, DATESENT, CONTENT) VALUES (7, 107, 106, SYSDATE, 'ggs xD');
+INSERT INTO CHATLOG (CHATID, RECEIVERID, SENDERID, DATESENT, CONTENT) VALUES (8, 108, 109, SYSDATE, 'need wun more for a full party');
+INSERT INTO CHATLOG (CHATID, RECEIVERID, SENDERID, DATESENT, CONTENT) VALUES (9, 109, 108, SYSDATE, 'invite me!');
+INSERT INTO CHATLOG (CHATID, RECEIVERID, SENDERID, DATESENT, CONTENT) VALUES (10, 110, 101, SYSDATE, 'me too broski!');
+
+/* ---------------------------------------------------------------------------------- */
+/* Q3: Create FRIENDSLIST table and insert 10 rows of sample data */
+/* ---------------------------------------------------------------------------------- */
+CREATE TABLE FRIENDSLIST (
+    USERID NUMBER(3),
+    FRIENDID NUMBER(3),
+    PRIMARY KEY (USERID, FRIENDID),
+    FOREIGN KEY (USERID) REFERENCES USERBASE(USERID),
+    FOREIGN KEY (FRIENDID) REFERENCES USERBASE(USERID)
+);
+
+INSERT INTO FRIENDSLIST (USERID, FRIENDID) VALUES (101, 102);
+INSERT INTO FRIENDSLIST (USERID, FRIENDID) VALUES (102, 101);
+INSERT INTO FRIENDSLIST (USERID, FRIENDID) VALUES (101, 103);
+INSERT INTO FRIENDSLIST (USERID, FRIENDID) VALUES (103, 101);
+INSERT INTO FRIENDSLIST (USERID, FRIENDID) VALUES (104, 105);
+INSERT INTO FRIENDSLIST (USERID, FRIENDID) VALUES (105, 104);
+INSERT INTO FRIENDSLIST (USERID, FRIENDID) VALUES (106, 107);
+INSERT INTO FRIENDSLIST (USERID, FRIENDID) VALUES (108, 109);
+INSERT INTO FRIENDSLIST (USERID, FRIENDID) VALUES (109, 108);
+INSERT INTO FRIENDSLIST (USERID, FRIENDID) VALUES (110, 101);
+
+/* ---------------------------------------------------------------------------------- */
+/* Q4: Create WISHLIST table and insert 10 rows of sample data */
+/* ---------------------------------------------------------------------------------- */
+CREATE TABLE WISHLIST (
+    USERID NUMBER(3),
+    PRODUCTCODE VARCHAR2(5),
+    POSITION NUMBER(3),
+    PRIMARY KEY (USERID, PRODUCTCODE),
+    FOREIGN KEY (USERID) REFERENCES USERBASE(USERID),
+    FOREIGN KEY (PRODUCTCODE) REFERENCES PRODUCTLIST(PRODUCTCODE)
+);
+
+INSERT INTO WISHLIST (USERID, PRODUCTCODE, POSITION) VALUES (101, 'GAME1', 1);
+INSERT INTO WISHLIST (USERID, PRODUCTCODE, POSITION) VALUES (101, 'GAME2', 2);
+INSERT INTO WISHLIST (USERID, PRODUCTCODE, POSITION) VALUES (102, 'GAME3', 1);
+INSERT INTO WISHLIST (USERID, PRODUCTCODE, POSITION) VALUES (103, 'GAME1', 1);
+INSERT INTO WISHLIST (USERID, PRODUCTCODE, POSITION) VALUES (104, 'GAME4', 1);
+INSERT INTO WISHLIST (USERID, PRODUCTCODE, POSITION) VALUES (105, 'GAME5', 1);
+INSERT INTO WISHLIST (USERID, PRODUCTCODE, POSITION) VALUES (105, 'GAME6', 2);
+INSERT INTO WISHLIST (USERID, PRODUCTCODE, POSITION) VALUES (106, 'GAME7', 1);
+INSERT INTO WISHLIST (USERID, PRODUCTCODE, POSITION) VALUES (107, 'GAME8', 1);
+INSERT INTO WISHLIST (USERID, PRODUCTCODE, POSITION) VALUES (108, 'GAME9', 1);
+
+/* ---------------------------------------------------------------------------------- */
+/* Q5: Create USERPROFILE table and insert 10 rows of sample data */
+/* ---------------------------------------------------------------------------------- */
+CREATE TABLE USERPROFILE (
+    USERID NUMBER(3) PRIMARY KEY,
+    IMAGEFILE VARCHAR2(250),
+    DESCRIPTION VARCHAR2(250),
+    FOREIGN KEY (USERID) REFERENCES USERBASE(USERID)
+);
+
+INSERT INTO USERPROFILE (USERID, IMAGEFILE, DESCRIPTION) VALUES (101, '/images/avatars/user101.png', 'Avid RPG player.');
+INSERT INTO USERPROFILE (USERID, IMAGEFILE, DESCRIPTION) VALUES (102, '/images/avatars/user102.png', 'Casual gamer, mostly weekends.');
+INSERT INTO USERPROFILE (USERID, IMAGEFILE, DESCRIPTION) VALUES (103, '/images/avatars/user103.png', 'Strategy games are life.');
+INSERT INTO USERPROFILE (USERID, IMAGEFILE, DESCRIPTION) VALUES (104, '/images/avatars/default.png', 'No description provided.');
+INSERT INTO USERPROFILE (USERID, IMAGEFILE, DESCRIPTION) VALUES (105, '/images/avatars/user105.jpg', 'FPS competitive player.');
+INSERT INTO USERPROFILE (USERID, IMAGEFILE, DESCRIPTION) VALUES (106, '/images/avatars/user106.png', 'Retro game collector.');
+INSERT INTO USERPROFILE (USERID, IMAGEFILE, DESCRIPTION) VALUES (107, '/images/avatars/user107.png', 'Just here for fun.');
+INSERT INTO USERPROFILE (USERID, IMAGEFILE, DESCRIPTION) VALUES (108, '/images/avatars/default.png', 'No description provided.');
+INSERT INTO USERPROFILE (USERID, IMAGEFILE, DESCRIPTION) VALUES (109, '/images/avatars/user109.png', 'Streaming on weekends.');
+INSERT INTO USERPROFILE (USERID, IMAGEFILE, DESCRIPTION) VALUES (110, '/images/avatars/user110.jpg', 'Speedrunner XD.');
+
+/* ---------------------------------------------------------------------------------- */
+/* Q6: Create SECURITYQUESTION table and insert 10 rows of sample data */
+/* ---------------------------------------------------------------------------------- */
+CREATE TABLE SECURITYQUESTION (
+    QUESTIONID NUMBER PRIMARY KEY,
+    USERID NUMBER(3),
+    QUESTION VARCHAR2(250),
+    ANSWER VARCHAR2(250),
+    FOREIGN KEY (USERID) REFERENCES USERBASE(USERID)
+);
+
+INSERT INTO SECURITYQUESTION (QUESTIONID, USERID, QUESTION, ANSWER) VALUES (1, 101, 'What is your childhood pet''s name?', 'Rexsplode');
+INSERT INTO SECURITYQUESTION (QUESTIONID, USERID, QUESTION, ANSWER) VALUES (2, 102, 'What city were you born in?', 'Charleston');
+INSERT INTO SECURITYQUESTION (QUESTIONID, USERID, QUESTION, ANSWER) VALUES (3, 103, 'What is your mother''s maiden name?', 'Wanda');
+INSERT INTO SECURITYQUESTION (QUESTIONID, USERID, QUESTION, ANSWER) VALUES (4, 104, 'What was the make of your first car?', 'Honda');
+INSERT INTO SECURITYQUESTION (QUESTIONID, USERID, QUESTION, ANSWER) VALUES (5, 105, 'What is your favorite color?', 'Black');
+INSERT INTO SECURITYQUESTION (QUESTIONID, USERID, QUESTION, ANSWER) VALUES (6, 106, 'What is your childhood pet''s name?', 'Fluffy');
+INSERT INTO SECURITYQUESTION (QUESTIONID, USERID, QUESTION, ANSWER) VALUES (7, 107, 'What city were you born in?', 'Columbia');
+INSERT INTO SECURITYQUESTION (QUESTIONID, USERID, QUESTION, ANSWER) VALUES (8, 108, 'What is your favorite color?', 'Tan');
+INSERT INTO SECURITYQUESTION (QUESTIONID, USERID, QUESTION, ANSWER) VALUES (9, 109, 'What was the make of your first car?', 'Mini Cooper');
+INSERT INTO SECURITYQUESTION (QUESTIONID, USERID, QUESTION, ANSWER) VALUES (10, 110, 'What is your mother''s maiden name?', 'Benjamson');
+
+/* ---------------------------------------------------------------------------------- */
+/* Q7: Create COMMUNITYRULES table and insert 10 rows of sample data */
+/* ---------------------------------------------------------------------------------- */
+CREATE TABLE COMMUNITYRULES (
+    RULENUM NUMBER(3) PRIMARY KEY,
+    TITLE VARCHAR2(250),
+    DESCRIPTION VARCHAR2(250),
+    SEVERITYPOINT NUMBER(4)
+);
+
+INSERT INTO COMMUNITYRULES (RULENUM, TITLE, DESCRIPTION, SEVERITYPOINT) VALUES (1, 'No Harassment', 'Do not harass or bully other users.', 100);
+INSERT INTO COMMUNITYRULES (RULENUM, TITLE, DESCRIPTION, SEVERITYPOINT) VALUES (2, 'No Cheating', 'Use of third-party software to gain an advantage is prohibited.', 200);
+INSERT INTO COMMUNITYRULES (RULENUM, TITLE, DESCRIPTION, SEVERITYPOINT) VALUES (3, 'No Spamming', 'Do not spam chat or forums with repetitive messages.', 20);
+INSERT INTO COMMUNITYRULES (RULENUM, TITLE, DESCRIPTION, SEVERITYPOINT) VALUES (4, 'No Hate Speech', 'Hate speech towards any group is strictly forbidden.', 150);
+INSERT INTO COMMUNITYRULES (RULENUM, TITLE, DESCRIPTION, SEVERITYPOINT) VALUES (5, 'Appropriate Names', 'Usernames must not be offensive.', 50);
+INSERT INTO COMMUNITYRULES (RULENUM, TITLE, DESCRIPTION, SEVERITYPOINT) VALUES (6, 'Account Sharing', 'Sharing accounts between multiple individuals is not allowed.', 80);
+INSERT INTO COMMUNITYRULES (RULENUM, TITLE, DESCRIPTION, SEVERITYPOINT) VALUES (7, 'No Phishing', 'Do not attempt to steal user credentials.', 250);
+INSERT INTO COMMUNITYRULES (RULENUM, TITLE, DESCRIPTION, SEVERITYPOINT) VALUES (8, 'Respect Privacy', 'Do not share personal information of others.', 120);
+INSERT INTO COMMUNITYRULES (RULENUM, TITLE, DESCRIPTION, SEVERITYPOINT) VALUES (9, 'No Exploiting', 'Do not abuse game bugs for progression.', 100);
+INSERT INTO COMMUNITYRULES (RULENUM, TITLE, DESCRIPTION, SEVERITYPOINT) VALUES (10, 'Follow Staff Instructions', 'Always listen to VaporGames moderators and support staff.', 60);
+
+/* ---------------------------------------------------------------------------------- */
+/* Q8: Create INFRACTIONS table and insert 10 rows of sample data */
+/* ---------------------------------------------------------------------------------- */
+CREATE TABLE INFRACTIONS (
+    INFRACTIONID NUMBER PRIMARY KEY,
+    USERID NUMBER(3),
+    RULENUM NUMBER(3),
+    DATEASSIGNED DATE,
+    PENALTY VARCHAR2(250),
+    FOREIGN KEY (USERID) REFERENCES USERBASE(USERID),
+    FOREIGN KEY (RULENUM) REFERENCES COMMUNITYRULES(RULENUM)
+);
+
+INSERT INTO INFRACTIONS (INFRACTIONID, USERID, RULENUM, DATEASSIGNED, PENALTY) VALUES (1, 103, 3, SYSDATE, '24 Hour Chat Ban');
+INSERT INTO INFRACTIONS (INFRACTIONID, USERID, RULENUM, DATEASSIGNED, PENALTY) VALUES (2, 105, 5, SYSDATE, 'Forced Name Change');
+INSERT INTO INFRACTIONS (INFRACTIONID, USERID, RULENUM, DATEASSIGNED, PENALTY) VALUES (3, 107, 2, SYSDATE, 'Permanent Account Ban');
+INSERT INTO INFRACTIONS (INFRACTIONID, USERID, RULENUM, DATEASSIGNED, PENALTY) VALUES (4, 108, 1, SYSDATE, '7 Day Suspension');
+INSERT INTO INFRACTIONS (INFRACTIONID, USERID, RULENUM, DATEASSIGNED, PENALTY) VALUES (5, 109, 3, SYSDATE, 'Warning Issued');
+INSERT INTO INFRACTIONS (INFRACTIONID, USERID, RULENUM, DATEASSIGNED, PENALTY) VALUES (6, 102, 6, SYSDATE, 'Password Reset Required');
+INSERT INTO INFRACTIONS (INFRACTIONID, USERID, RULENUM, DATEASSIGNED, PENALTY) VALUES (7, 104, 9, SYSDATE, 'Account Rollback');
+INSERT INTO INFRACTIONS (INFRACTIONID, USERID, RULENUM, DATEASSIGNED, PENALTY) VALUES (8, 106, 8, SYSDATE, '30 Day Suspension');
+INSERT INTO INFRACTIONS (INFRACTIONID, USERID, RULENUM, DATEASSIGNED, PENALTY) VALUES (9, 101, 10, SYSDATE, 'Warning Issued');
+INSERT INTO INFRACTIONS (INFRACTIONID, USERID, RULENUM, DATEASSIGNED, PENALTY) VALUES (10, 110, 3, SYSDATE, '48 Hour Chat Ban');
+
+/* ---------------------------------------------------------------------------------- */
+/* Q9: Create USERSUPPORT table and insert 10 rows of sample data */
+/* ---------------------------------------------------------------------------------- */
+CREATE TABLE USERSUPPORT (
+    TICKETID NUMBER PRIMARY KEY,
+    EMAIL VARCHAR2(250),
+    ISSUE VARCHAR2(250),
+    DATESUBMITTED DATE,
+    DATEUPDATED DATE,
+    STATUS VARCHAR2(250)
+);
+
+INSERT INTO USERSUPPORT (TICKETID, EMAIL, ISSUE, DATESUBMITTED, DATEUPDATED, STATUS) VALUES (1, 'user101@email.com', 'Cannot login to account', SYSDATE-3, SYSDATE-1, 'IN PROGRESS');
+INSERT INTO USERSUPPORT (TICKETID, EMAIL, ISSUE, DATESUBMITTED, DATEUPDATED, STATUS) VALUES (2, 'user102@email.com', 'Game crashes on launch', SYSDATE-2, SYSDATE, 'NEW');
+INSERT INTO USERSUPPORT (TICKETID, EMAIL, ISSUE, DATESUBMITTED, DATEUPDATED, STATUS) VALUES (3, 'user103@email.com', 'Missing game from library', SYSDATE-5, SYSDATE-4, 'CLOSED');
+INSERT INTO USERSUPPORT (TICKETID, EMAIL, ISSUE, DATESUBMITTED, DATEUPDATED, STATUS) VALUES (4, 'user104@email.com', 'Payment declined', SYSDATE-1, SYSDATE-1, 'NEW');
+INSERT INTO USERSUPPORT (TICKETID, EMAIL, ISSUE, DATESUBMITTED, DATEUPDATED, STATUS) VALUES (5, 'user105@email.com', 'Report a bug in the store', SYSDATE-10, SYSDATE-2, 'IN PROGRESS');
+INSERT INTO USERSUPPORT (TICKETID, EMAIL, ISSUE, DATESUBMITTED, DATEUPDATED, STATUS) VALUES (6, 'user106@email.com', 'Forgot password', SYSDATE, SYSDATE, 'NEW');
+INSERT INTO USERSUPPORT (TICKETID, EMAIL, ISSUE, DATESUBMITTED, DATEUPDATED, STATUS) VALUES (7, 'user107@email.com', 'Requesting a refund', SYSDATE-6, SYSDATE-5, 'CLOSED');
+INSERT INTO USERSUPPORT (TICKETID, EMAIL, ISSUE, DATESUBMITTED, DATEUPDATED, STATUS) VALUES (8, 'user108@email.com', 'How to change username?', SYSDATE-2, SYSDATE-1, 'CLOSED');
+INSERT INTO USERSUPPORT (TICKETID, EMAIL, ISSUE, DATESUBMITTED, DATEUPDATED, STATUS) VALUES (9, 'user109@email.com', 'Account hacked', SYSDATE-1, SYSDATE, 'IN PROGRESS');
+INSERT INTO USERSUPPORT (TICKETID, EMAIL, ISSUE, DATESUBMITTED, DATEUPDATED, STATUS) VALUES (10, 'user110@email.com', 'Download speed is slow', SYSDATE, SYSDATE, 'NEW');
+
+/* ---------------------------------------------------------------------------------- */
+/* Q10: Creating views to display unique security questions and active support tickets */
+/* ---------------------------------------------------------------------------------- */
+-- View displaying every unique QUESTION from SECURITYQUESTION
+CREATE VIEW V_UNIQUE_SEC_QUESTIONS AS
+SELECT DISTINCT QUESTION
+FROM SECURITYQUESTION;
+
+-- View displaying active tickets sorted by earliest DATEUPDATED
+CREATE VIEW V_ACTIVE_TICKETS AS
+SELECT  TICKETID, 
+        EMAIL, 
+        ISSUE, 
+        DATEUPDATED
+FROM USERSUPPORT
+WHERE STATUS IN ('NEW', 'IN PROGRESS')
+ORDER BY DATEUPDATED ASC;
